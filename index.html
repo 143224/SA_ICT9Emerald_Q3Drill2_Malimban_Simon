@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Calculator 2.0</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .calculator {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 320px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .display {
+            width: 100%;
+            height: 60px;
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 28px;
+            text-align: right;
+            padding: 0 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            height: 50px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #e9ecef;
+        }
+        
+        button:hover {
+            background-color: #dee2e6;
+        }
+        
+        .number {
+            background-color: #f8f9fa;
+        }
+        
+        .operator {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .operator:hover {
+            background-color: #0056b3;
+        }
+        
+        .clear {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .clear:hover {
+            background-color: #c82333;
+        }
+        
+        .equals {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .equals:hover {
+            background-color: #218838;
+        }
+        
+        .instructions-btn {
+            background-color: #6c757d;
+            color: white;
+            width: 100%;
+            height: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .notification-btn {
+            background-color: #17a2b8;
+            color: white;
+            width: 100%;
+            height: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .notification-status {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+        
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1> Online Calculator 2.0</h1>
+        
+        <div class="display" id="display">0</div>
+        
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="deleteLast()">⌫</button>
+            <button class="operator" onclick="addToDisplay('/')">/</button>
+            <button class="operator" onclick="addToDisplay('*')">×</button>
+            
+            <button class="number" onclick="addToDisplay('7')">7</button>
+            <button class="number" onclick="addToDisplay('8')">8</button>
+            <button class="number" onclick="addToDisplay('9')">9</button>
+            <button class="operator" onclick="addToDisplay('-')">-</button>
+            
+            <button class="number" onclick="addToDisplay('4')">4</button>
+            <button class="number" onclick="addToDisplay('5')">5</button>
+            <button class="number" onclick="addToDisplay('6')">6</button>
+            <button class="operator" onclick="addToDisplay('+')">+</button>
+            
+            <button class="number" onclick="addToDisplay('1')">1</button>
+            <button class="number" onclick="addToDisplay('2')">2</button>
+            <button class="number" onclick="addToDisplay('3')">3</button>
+            <button class="equals" onclick="calculate()">=</button>
+            
+            <button class="number" onclick="addToDisplay('0')" style="grid-column: span 2;">0</button>
+            <button class="number" onclick="addToDisplay('.')">.</button>
+        </div>
+        
+        <button class="notification-btn" onclick="enableNotifications()">Enable Computer Notifications</button>
+        
+        <button class="instructions-btn" onclick="showInstructions()">Instructions</button>
+        
+        <div class="notification-status" id="notificationStatus">
+            Notifications: Not enabled
+        </div>
+    </div>
+    
+    <div class="modal" id="instructionsModal">
+        <div class="modal-content">
+            <span class="close" onclick="hideInstructions()">&times;</span>
+            <h2>Calculator Instructions</h2>
+            <p><strong>How to use:</strong></p>
+            <ul>
+                <li>Click numbers to enter them</li>
+                <li>Click +, -, ×, or ÷ for operations</li>
+                <li>Click = to calculate</li>
+                <li>Click C to clear</li>
+                <li>Click ⌫ to delete last number</li>
+            </ul>
+            <p><strong>Computer Pop-up Notifications:</strong></p>
+            <p>1. Click "Enable Computer Notifications" button</p>
+            <p>2. Allow notifications in the browser pop-up</p>
+            <p>3. When you subtract numbers, a computer notification will pop up showing the difference</p>
+            <p>Example: 10 - 3 = 7 will show a computer pop-up saying "The difference is 7"</p>
+            <p><strong>Note:</strong> Works in Chrome, Firefox, and Edge browsers</p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple calculator variables
+        let currentNumber = '0';
+        let previousNumber = '';
+        let operator = '';
+        let result = '';
+        let notificationsEnabled = false;
+        
+        // Get display element
+        const display = document.getElementById('display');
+        
+        // Check if browser supports notifications
+        function checkNotificationSupport() {
+            if (!("Notification" in window)) {
+                document.getElementById('notificationStatus').textContent = 
+                    "Your browser doesn't support notifications";
+                return false;
+            }
+            return true;
+        }
+        
+        // Enable computer notifications
+        function enableNotifications() {
+            if (!checkNotificationSupport()) {
+                alert("Your browser doesn't support notifications. Try Chrome, Firefox, or Edge.");
+                return;
+            }
+            
+            if (Notification.permission === "granted") {
+                notificationsEnabled = true;
+                document.getElementById('notificationStatus').textContent = 
+                    "✓ Notifications enabled! Try subtracting numbers.";
+                alert("Notifications are already enabled!");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === "granted") {
+                        notificationsEnabled = true;
+                        document.getElementById('notificationStatus').textContent = 
+                            "✓ Notifications enabled! Try subtracting numbers.";
+                        
+                        // Show a test notification
+                        showComputerNotification("Calculator Ready", "Notifications enabled! Try subtracting numbers.");
+                    } else {
+                        document.getElementById('notificationStatus').textContent = 
+                            "Notifications blocked. Please enable in browser settings.";
+                    }
+                });
+            } else {
+                alert("Notifications were blocked. Please enable them in your browser settings.");
+                document.getElementById('notificationStatus').textContent = 
+                    "Notifications blocked. Please enable in browser settings.";
+            }
+        }
+        
+        // Show computer pop-up notification
+        function showComputerNotification(title, message) {
+            if (!notificationsEnabled) return;
+            
+            const notification = new Notification(title, {
+                body: message,
+                icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM4LjEzIDIgNSA1LjEzIDUgOVYxNUwxMiAyMlYyWiIgZmlsbD0iIzAwN2JmZiIvPjwvc3ZnPg=='
+            });
+            
+            // Close notification after 5 seconds
+            setTimeout(() => {
+                notification.close();
+            }, 5000);
+        }
+        
+        // Add number or operator to display
+        function addToDisplay(value) {
+            if (currentNumber === '0' || result !== '') {
+                currentNumber = '';
+                result = '';
+            }
+            
+            if (value === '+' || value === '-' || value === '*' || value === '/') {
+                if (operator === '') {
+                    previousNumber = currentNumber;
+                    operator = value;
+                    currentNumber = '';
+                }
+            }
+            
+            currentNumber += value;
+            display.textContent = currentNumber;
+        }
+        
+        // Clear display
+        function clearDisplay() {
+            currentNumber = '0';
+            previousNumber = '';
+            operator = '';
+            result = '';
+            display.textContent = currentNumber;
+        }
+        
+        // Delete last character
+        function deleteLast() {
+            if (currentNumber.length > 1) {
+                currentNumber = currentNumber.slice(0, -1);
+            } else {
+                currentNumber = '0';
+            }
+            display.textContent = currentNumber;
+        }
+        
+        // Calculate result
+        function calculate() {
+            if (previousNumber === '' || operator === '' || currentNumber === '') {
+                return;
+            }
+            
+            const num1 = parseFloat(previousNumber);
+            const num2 = parseFloat(currentNumber);
+            let calculationResult = 0;
+            
+            switch (operator) {
+                case '+':
+                    calculationResult = num1 + num2;
+                    break;
+                case '-':
+                    calculationResult = num1 - num2;
+                    
+                    // Show computer pop-up for subtraction
+                    if (notificationsEnabled) {
+                        showComputerNotification(
+                            "Subtraction Result",
+                            `The difference of ${num1} and ${num2} is ${calculationResult}`
+                        );
+                    } else {
+                        alert(`The difference of ${num1} and ${num2} is ${calculationResult}\n\nEnable notifications for computer pop-ups!`);
+                    }
+                    break;
+                case '*':
+                    calculationResult = num1 * num2;
+                    break;
+                case '/':
+                    if (num2 === 0) {
+                        alert('Cannot divide by zero!');
+                        currentNumber = 'Error';
+                        display.textContent = currentNumber;
+                        return;
+                    }
+                    calculationResult = num1 / num2;
+                    break;
+            }
+            
+            result = calculationResult.toString();
+            currentNumber = result;
+            display.textContent = result;
+            
+            // Reset for next calculation
+            previousNumber = '';
+            operator = '';
+        }
+        
+        // Show instructions modal
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'block';
+        }
+        
+        // Hide instructions modal
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('instructionsModal');
+            if (event.target === modal) {
+                hideInstructions();
+            }
+        }
+        
+        // Simple keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                addToDisplay(key);
+            } else if (key === '.') {
+                addToDisplay('.');
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                addToDisplay(key);
+            } else if (key === 'Enter') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                deleteLast();
+            } else if (key === 'n' || key === 'N') {
+                enableNotifications();
+            }
+        });
+        
+        // Initial setup
+        window.onload = function() {
+            checkNotificationSupport();
+            
+            // Check if notifications are already enabled
+            if (Notification.permission === "granted") {
+                notificationsEnabled = true;
+                document.getElementById('notificationStatus').textContent = 
+                    "✓ Notifications already enabled! Try subtracting numbers.";
+            }
+        };
+    </script>
+</body>
+</html>
